@@ -32,16 +32,27 @@ function createTextElement(text) {
   }
 }
 
-const element = React.createElement(
-  'div',
-  {
-    id: 'foo'
-  },
-  React.createElement("a", null,
-    React.createElement('span', null, 'this is span')
-  ),
-  React.createElement("b")
+const Dedoo = {
+  createElement
+};
+
+// const element = Dedoo.createElement(
+//   'div',
+//   { id: 'foo'},
+//   React.createElement('span', null, 'this is span'),
+//   Dedoo.createElement("b")
+// )
+
+// 相当于执行 Dedoo.createElement
+/** @jsx Dedoo.createElement */
+const element = (
+  <div id="foo">
+    <a>bar</a>
+    <b />
+  </div>
 )
 
 const container = document.getElementById("root")
 ReactDOM.render(element, container);
+
+// 使用React render会报错
