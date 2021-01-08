@@ -1,13 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-// const element = (
-//   <div id="foo">
-//     <a>bar</a>
-//     <b />
-//   </div>
-// )
-
 function createElement(type, props, ...children) {
   return {
     type,
@@ -32,7 +25,9 @@ function createTextElement(text) {
   }
 }
 
-const isProperty = key => key !== "children"
+function isProperty (key) {
+  return key !== "children";
+}
 
 function render (ele, container) {
   // console.info(ele, container)
@@ -48,26 +43,6 @@ function render (ele, container) {
     render(element, dom)
   });
   container.appendChild(dom)
-}
-
-// 是否有后续的任务
-let nextUnitOfWork = null;
-
-function workLoop (deadLine) {
-  let shouldYield = false;
-  while (nextUnitOfWork && !shouldYield) {
-    nextUnitOfWork = performUnitOfWork(
-      nextUnitOfWork
-    )
-    shouldYield = deadline.timeRemaining() < 1;
-  }
-  requestIdleCallback(workLoop);
-};
-
-requestIdleCallback(workLoop)
-
-function performUnitOfWork (nextUnitOfWork) {
-  // todo
 }
 
 const Dedoo = {
