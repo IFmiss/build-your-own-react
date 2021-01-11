@@ -47,19 +47,24 @@ function createDom (fiber) {
   return dom;
 }
 
+function commitRoot() {
+  // TODO add nodes to dom
+}
+
 function render(element, container) {
   // TODO set next unit of work
-  nextUnitOfWork = {
+  wipRoot = {
     dom: container,
     props: {
       children: [element]
     }
   }
-
+  nextUnitOfWork = wipRoot;
 }
 
 // 是否有后续的任务
 let nextUnitOfWork = null;
+let wipRoot = null;
 
 function workLoop (deadLine) {
   let shouldYield = false;
@@ -69,6 +74,12 @@ function workLoop (deadLine) {
     )
     shouldYield = deadline.timeRemaining() < 1;
   }
+
+  // 如果已经结束，且 wipRoot 存在，执行commit 
+  if (!nextUnitOfWork && wipRoot) {
+    commitRoot()
+  }
+
   requestIdleCallback(workLoop);
 };
 
@@ -78,9 +89,6 @@ function performUnitOfWork (fiber) {
   // todo
   if (!fiber.dom) {
     fiber.dom = createDom(fiber);
-  }
-  if (fiber.parent) {
-    filter.parent.dom.appendChild(fiber.dom);
   }
 
   // create new fiber
