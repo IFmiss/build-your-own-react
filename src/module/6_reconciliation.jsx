@@ -32,7 +32,8 @@ function createTextElement(text) {
   }
 }
 
-const isProperty = key => key !== "children"
+const isEvent = key => key.startsWith('on');
+const isProperty = key => key !== "children" && !isEvent(key);
 
 function createDom (fiber) {
   // console.info(ele, container)
@@ -49,6 +50,7 @@ function createDom (fiber) {
 
 function commitRoot() {
   // TODO add nodes to dom
+  deletions.forEach(commitWork);
   commitWork(wipRoot.child);
   // 记录最后一个 fiber 树，用于和新的任务比较
   currentRoot = wipRoot;
@@ -60,9 +62,42 @@ function commitWork(fiber) {
     return;
   }
   const domParent = fiber.dom.parent;
-  domParent.appendClid(fiber.dom);
+
+  // PLACEMENT
+  if (fiber.effectTag === 'PLACEMENT'
+    && fiber.dom !== null) {
+    domParent.appendClid(fiber.dom);
+  } else if (fiber.effectTag === 'UPDATE') {
+    updateDom(
+      fiber.dom,
+      fiber.alternate.props,
+      fiber.props
+    )
+  } else if (fiber.effectTag === 'DELETION') {
+    domParent.removeChild(fiber.dom);
+  }
+
   commitWork(fiber.child);
   commitWork(fiber.sibling);
+}
+
+const isNew = (prev, next) => key => prev[key] !== next[key]; // 是否更新的/
+const isGone = (prev, next) => key => !(key in next); // 是否移除
+function updateDom(dom, prevProps, nextProps) {
+   //Remove old or changed event listeners
+   
+
+  // Remove old properties
+  Object.keys(prevProps)
+    .filter(isProperty)
+    .filter(isGone(prevProps, nextProps))
+    .forEach(k => dom[k] = '')
+  
+  // Set new or changed properties
+  Object.keys(nextProps)
+    .filter(isProperty)
+    .filter(isNew(prevProps, nextProps))
+    .forEach(k => dom[k] = nextProps[k])
 }
 
 function render(element, container) {
@@ -73,6 +108,7 @@ function render(element, container) {
       children: [element]
     }
   }
+  deletions = [];
   nextUnitOfWork = wipRoot;
 }
 
@@ -82,7 +118,9 @@ let nextUnitOfWork = null;
 // 进行中的根
 let wipRoot = null;
 
-let currentRoot = null
+let currentRoot = null;
+
+let deletions = null;
 
 function workLoop (deadLine) {
   let shouldYield = false;
@@ -111,29 +149,7 @@ function performUnitOfWork (fiber) {
 
   // create new fiber
   const elements = fiber.props.children;
-  let index = 0;
-  let prevSibling = null;
-
-  while (index < elements.length) {
-    const element = elements[index];
-    const newFiber = {
-      type: element.type,
-      props: element.props,
-      parent: fiber,
-      dom: null,
-    }
-
-    if (index === 0) {
-      fiber.child = newFiber;
-    } else {
-      // 同级
-      prevSibling.sibling = newFiber;
-    }
-    
-    // 设置前一个 同级别的 fiber 对象，用于串联 fiber 关系
-    prevSibling = newFiber;
-    index ++;
-  }
+  reconcileChildren(fiber, elements);
 
   // 查找下一个工作单元。 先是 子元素 再到 兄弟元素， 最后是父元素的 兄弟元素
   if (fiber.child) {
@@ -149,6 +165,77 @@ function performUnitOfWork (fiber) {
       // uncle 
       nextFiber = nextFiber.parent;
     }
+  }
+}
+
+function reconcileChildren(wipFiber, elements) {
+  let index = 0;
+  let oldFiber = wipRoot.alternate && wipRoot.alternate.child
+  let prevSibling = null;
+
+  while (
+    index < elements.length ||
+    oldFiber !== null  
+  ) {
+    const element = elements[index];
+    // const newFiber = {
+    //   type: element.type,
+    //   props: element.props,
+    //   parent: fiber,
+    //   dom: null,
+    // }
+    let newFiber = null
+    // TODO compare oldFiber to element
+    const sameType =
+      oldFiber &&
+      element &&
+      element.type == oldFiber.type;
+    
+    if (sameType) {
+      // TODO update the node
+      newFiber = {
+        type: element.type,
+        props: element.props,
+        dom: oldFiber.dom,
+        parent: wipFiber,
+        alternate: oldFiber,
+        effectTag: 'UPDATE'
+      }
+    }
+
+    if (element && !sameType) {
+      // TODO add the node
+      newFiber = {
+        type: element.type,
+        props: element.props,
+        dom: null,
+        parent: wipFiber,
+        alternate: null,
+        effectTag: 'PLACEMENT'
+      }
+    }
+
+    if (oldFiber && !sameType) {
+      // delete
+      oldFiber.effectTag = 'DELETION';
+      deletions.push(oldFiber);
+    }
+
+    if (oldFiber) {
+      oldFiber = oldFiber.sibling
+    }
+
+
+    if (index === 0) {
+      fiber.child = newFiber;
+    } else {
+      // 同级
+      prevSibling.sibling = newFiber;
+    }
+    
+    // 设置前一个 同级别的 fiber 对象，用于串联 fiber 关系
+    prevSibling = newFiber;
+    index ++;
   }
 }
 
