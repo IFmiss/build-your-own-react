@@ -84,8 +84,25 @@ function commitWork(fiber) {
 const isNew = (prev, next) => key => prev[key] !== next[key]; // 是否更新的/
 const isGone = (prev, next) => key => !(key in next); // 是否移除
 function updateDom(dom, prevProps, nextProps) {
-   //Remove old or changed event listeners
-   
+  //Remove old or changed event listeners
+  Object.keys(prevProps)
+    .filter(
+      k => (
+        // 新属性中不存在该属性
+        !(k in nextProps) ||
+        // 或者是否是更新的属性
+        isNew(prevProps, nextProps)(k)
+      )
+    )
+    .forEach(name => {
+      // 找到事件
+      const eventName = name.toLowerCase().substring(2);
+      // 移除事件
+      dom.removeEventListener(
+        eventName,
+        prevProps[name]
+      )
+    })
 
   // Remove old properties
   Object.keys(prevProps)
@@ -98,6 +115,8 @@ function updateDom(dom, prevProps, nextProps) {
     .filter(isProperty)
     .filter(isNew(prevProps, nextProps))
     .forEach(k => dom[k] = nextProps[k])
+
+  // Add new Event Handle
 }
 
 function render(element, container) {
