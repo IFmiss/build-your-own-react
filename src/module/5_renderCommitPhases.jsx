@@ -66,7 +66,7 @@ function render(element, container) {
 let nextUnitOfWork = null;
 let wipRoot = null;
 
-function workLoop (deadLine) {
+function workLoop (deadline) {
   let shouldYield = false;
   while (nextUnitOfWork && !shouldYield) {
     nextUnitOfWork = performUnitOfWork(

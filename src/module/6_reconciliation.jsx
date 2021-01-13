@@ -61,13 +61,15 @@ function commitWork(fiber) {
   if(!fiber) {
     return;
   }
-  const domParent = fiber.dom.parent;
+  const domParent = fiber.parent.dom;
 
   // PLACEMENT
-  if (fiber.effectTag === 'PLACEMENT'
-    && fiber.dom !== null) {
-    domParent.appendClid(fiber.dom);
-  } else if (fiber.effectTag === 'UPDATE') {
+  if (fiber.effectTag === 'PLACEMENT' &&
+    fiber.dom !== null) {
+    domParent.appendChild(fiber.dom);
+  } else if (
+    fiber.effectTag === 'UPDATE' &&
+    fiber.dom !== null) {
     updateDom(
       fiber.dom,
       fiber.alternate.props,
@@ -117,6 +119,16 @@ function updateDom(dom, prevProps, nextProps) {
     .forEach(k => dom[k] = nextProps[k])
 
   // Add new Event Handle
+  Object.keys(nextProps)
+    .filter(isEvent)
+    .filter(isNew(prevProps, nextProps))
+  .forEach(name => {
+    const eventName = name.toLowerCase().substring(2);
+    dom.addEventListener(
+      name,
+      nextProps[name]
+    )
+  })
 }
 
 function render(element, container) {
@@ -141,7 +153,7 @@ let currentRoot = null;
 
 let deletions = null;
 
-function workLoop (deadLine) {
+function workLoop (deadline) {
   let shouldYield = false;
   while (nextUnitOfWork && !shouldYield) {
     nextUnitOfWork = performUnitOfWork(
@@ -188,73 +200,60 @@ function performUnitOfWork (fiber) {
 }
 
 function reconcileChildren(wipFiber, elements) {
-  let index = 0;
-  let oldFiber = wipRoot.alternate && wipRoot.alternate.child
-  let prevSibling = null;
+  let index = 0
+  let oldFiber =
+    wipFiber.alternate && wipFiber.alternate.child
+  let prevSibling = null
 
   while (
     index < elements.length ||
-    oldFiber !== null  
+    oldFiber != null
   ) {
-    const element = elements[index];
-    // const newFiber = {
-    //   type: element.type,
-    //   props: element.props,
-    //   parent: fiber,
-    //   dom: null,
-    // }
+    const element = elements[index]
     let newFiber = null
-    // TODO compare oldFiber to element
+
     const sameType =
       oldFiber &&
       element &&
-      element.type == oldFiber.type;
-    
+      element.type == oldFiber.type
+
     if (sameType) {
-      // TODO update the node
       newFiber = {
-        type: element.type,
+        type: oldFiber.type,
         props: element.props,
         dom: oldFiber.dom,
         parent: wipFiber,
         alternate: oldFiber,
-        effectTag: 'UPDATE'
+        effectTag: "UPDATE",
       }
     }
-
     if (element && !sameType) {
-      // TODO add the node
       newFiber = {
         type: element.type,
         props: element.props,
         dom: null,
         parent: wipFiber,
         alternate: null,
-        effectTag: 'PLACEMENT'
+        effectTag: "PLACEMENT",
       }
     }
-
     if (oldFiber && !sameType) {
-      // delete
-      oldFiber.effectTag = 'DELETION';
-      deletions.push(oldFiber);
+      oldFiber.effectTag = "DELETION"
+      deletions.push(oldFiber)
     }
 
     if (oldFiber) {
       oldFiber = oldFiber.sibling
     }
 
-
     if (index === 0) {
-      fiber.child = newFiber;
-    } else {
-      // 同级
-      prevSibling.sibling = newFiber;
+      wipFiber.child = newFiber
+    } else if (element) {
+      prevSibling.sibling = newFiber
     }
-    
-    // 设置前一个 同级别的 fiber 对象，用于串联 fiber 关系
-    prevSibling = newFiber;
-    index ++;
+
+    prevSibling = newFiber
+    index++
   }
 }
 

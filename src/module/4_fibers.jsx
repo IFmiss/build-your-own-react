@@ -61,7 +61,7 @@ function render(element, container) {
 // 是否有后续的任务
 let nextUnitOfWork = null;
 
-function workLoop (deadLine) {
+function workLoop (deadline) {
   let shouldYield = false;
   while (nextUnitOfWork && !shouldYield) {
     nextUnitOfWork = performUnitOfWork(
@@ -80,7 +80,7 @@ function performUnitOfWork (fiber) {
     fiber.dom = createDom(fiber);
   }
   if (fiber.parent) {
-    filter.parent.dom.appendChild(fiber.dom);
+    fiber.parent.dom.appendChild(fiber.dom);
   }
 
   // create new fiber
