@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "target": "es5", 
+    "module": "ESNext",
+    "removeComments": false,
+    "declaration": true,
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "baseUrl": ".",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "global.d.ts",
+      "typings"
+    ],
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "sourceMap": false,
+    "noImplicitAny": false
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
