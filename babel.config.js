@@ -8,6 +8,7 @@ module.exports = function (api) {
       }
     ],
     '@babel/preset-react',
+    '@babel/preset-typescript'
   ]
   const plugins = [
     '@babel/plugin-syntax-dynamic-import'
