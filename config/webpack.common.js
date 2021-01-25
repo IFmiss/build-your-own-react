@@ -30,12 +30,12 @@ module.exports = {
   module: {
 		rules: [
 			{
-				test: /\.(js|jsx)$/,
+				test: /\.(js|jsx|ts|tsx)$/,
 				loader: 'babel-loader',
 				query: {
 					compact: false
 				}
-      },
+			},
       {
         test: /\.(c)ss$/,
         use: [

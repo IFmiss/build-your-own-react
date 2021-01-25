@@ -90,6 +90,10 @@ const element = (
   </div>
 )
 
+// React.createElement(
+//   'div',
+// )
+
 const container = document.getElementById("root")
 // ReactDOM.render(element, container);
 Dedoo.render(element, container)

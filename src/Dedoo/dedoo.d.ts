@@ -5,8 +5,8 @@ type DedooElementType = keyof HTMLElementTagNameMap | DedooNode | SelfElementTyp
 
 interface DedooElement {
   type: DedooElementType
-  props?: {
+  props: {
     [props: string]: any;
     children: any[];
-  };
+  } | null;
 }

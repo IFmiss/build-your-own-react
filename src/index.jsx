@@ -12,7 +12,17 @@
 
 // import './module/6_reconciliation';
 
-import './module/7_functionComponents';
+// import './module/7_functionComponents';
+import ReactDOM from 'react-dom';
+import Dedoo from './Dedoo';
 
+/**@jsx Dedoo.createElement */
+const element = (
+  <div id='foo'>
+    <a>bar</a>
+    <b/>
+  </div>
+)
 
-
+const container = document.getElementById('root');
+Dedoo.render(element, container);

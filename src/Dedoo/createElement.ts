@@ -1,4 +1,4 @@
-function createElement(
+export default function createElement(
   type: DedooElementType,
   props: object,
   ...children
@@ -17,6 +17,7 @@ function createElement(
   }
 }
 
+// 文本节点
 function createTextElement(child: string): DedooElement {
   return {
     type: 'TEXT_ELEMENT',
