@@ -90,7 +90,7 @@ export function getNextUnitOfWork () {
 // 循环渲染函数
 // 在渲染函数中，将nextUnitOfWork设置为纤维树的根。
 // 然后，当浏览器准备就绪时，它将调用我们的workLoop，我们将开始在根目录上工作
-export function workLoop (deadLine) {
+export function workLoop(deadLine) {
   let shouldYield = false;  // 是否要挂起
   
   // 如果存在任务 且 未暂停
@@ -100,6 +100,7 @@ export function workLoop (deadLine) {
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
   }
 
+  // 如果没有后续任务，且wipRoot存在，则执行 commit动作；
   if (!nextUnitOfWork && getWipRoot()) {
     commitRoot()
   }

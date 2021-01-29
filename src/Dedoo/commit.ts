@@ -18,11 +18,13 @@ export function commitRoot() {
   deletions?.forEach(commitWork);
 
   // TODO add nodes to dom
+  // 从根root开始commit 一步步往下
   if (wipRoot?.child) {
     commitWork(wipRoot?.child);
   }
 
-  // 存储当前的 fiber 信息
+  // 存储当前的 fiber 信息 默认是 // !根元素
+  
   // 因此，在完成提交之后，我们需要
   // ! 保存对“我们提交给DOM的最后一棵纤维树”的引用。
   // 我们称它为currentRoot

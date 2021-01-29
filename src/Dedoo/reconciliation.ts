@@ -17,7 +17,7 @@ export function setDeletions (val: null | DedooFiber[] ) {
   deletions = val;
 }
 
-// 调和子元素
+// 调和子元素 （增删改）的数据更新
 // ! 在这里，我们将旧纤维与新元素进行协调。
 // wipFiber 当前父元素的 fiber
 // elements 子元素的dom数据
