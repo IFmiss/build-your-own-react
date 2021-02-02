@@ -92,7 +92,7 @@ export function getNextUnitOfWork () {
 // 然后，当浏览器准备就绪时，它将调用我们的workLoop，我们将开始在根目录上工作
 export function workLoop(deadLine) {
   let shouldYield = false;  // 是否要挂起
-  
+
   // 如果存在任务 且 未暂停
   while (nextUnitOfWork && !shouldYield) {
     // todo
@@ -108,10 +108,51 @@ export function workLoop(deadLine) {
   window.requestIdleCallback(workLoop);
 };
 
+window.requestIdleCallback(workLoop);
+
 // 创建工作单元
 // 执行工作
 // 并返回下一个工作单元
 export function performUnitOfWork(fiber: DedooFiber): FiberNextWork {
+  // 判断是否函数组件
+  const isFunctionComponent = fiber.type instanceof Function;
+
+  if (isFunctionComponent) {
+    // 函数组件操作
+    updateFunctionComponent(fiber);
+  } else {
+    // 常规组件操作
+    updateHostComponent(fiber);
+  }
+
+  // ! return next unit of work
+  // 如果任务操作完成之后，则进行下一个任务的 fiber 信息
+  // 如果有子节点，则返回子元素
+  // ! 最后，我们搜索下一个工作单元。我们首先尝试与孩子，然后与兄弟姐妹，然后与叔叔，依此类推
+  if (fiber.child) {
+    return fiber.child;
+  }
+
+  let nextFiber = fiber;
+  // 这个循环用于 sibling，或者parent 查找以及
+  while(nextFiber) {
+    // 如果有同级fiber，选择兄弟fiber 用于下一个工作单元
+    if (nextFiber.sibling) {
+      return nextFiber.sibling;
+    }
+    // 如果没有这一层的则直接返回父元素
+    nextFiber = nextFiber.parent;
+  }
+  return null;
+}
+
+
+function updateFunctionComponent(fiber: DedooFiber) {
+  const children = [(fiber.type as DedooNode)(fiber.props || {})] as DedooElement[];
+  reconcileChildren(fiber, children);
+}
+
+function updateHostComponent(fiber: DedooFiber) {
   // ? add dom node
   // ? create new fibers
   // ? return next unit of work
@@ -137,24 +178,4 @@ export function performUnitOfWork(fiber: DedooFiber): FiberNextWork {
 
   // reconcileChildren  协调
   reconcileChildren(fiber, elements);
-
-  // ! return next unit of work
-  // 如果任务操作完成之后，则进行下一个任务的 fiber 信息
-  // 如果有子节点，则返回子元素
-  // ! 最后，我们搜索下一个工作单元。我们首先尝试与孩子，然后与兄弟姐妹，然后与叔叔，依此类推
-  if (fiber.child) {
-    return fiber.child;
-  }
-
-  let nextFiber = fiber;
-  // 这个循环用于 sibling，或者parent 查找以及
-  while(nextFiber) {
-    // 如果有同级fiber，选择兄弟fiber 用于下一个工作单元
-    if (nextFiber.sibling) {
-      return nextFiber.sibling;
-    }
-    // 如果没有这一层的则直接返回父元素
-    nextFiber = nextFiber.parent;
-  }
-  return null;
 }

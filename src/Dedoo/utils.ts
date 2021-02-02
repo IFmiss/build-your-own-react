@@ -2,7 +2,7 @@
 export const isProperty = (key: string) => key !== 'children' && !isEvent(key);
 
 // 是否新增 或者 是需要更新的属性
-export const isNew = (prev, next) => (key: string) => prev[key] === next[key];
+export const isNew = (prev, next) => (key: string) => prev[key] !== next[key];
 
 // 是否是已被移除的属性
 export const isGone = (prev, next) => (key: string) => !(key in next);

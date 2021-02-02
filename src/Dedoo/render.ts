@@ -1,7 +1,6 @@
 import { isProperty } from "./utils";
 import {
   setNextUnitOfWork,
-  getNextUnitOfWork
 } from './concurrent';
 import { setWipRoot } from "./commit";
 import { getCurrentRoot, setDeletions } from "./reconciliation";

@@ -20,6 +20,8 @@ import Dedoo from './Dedoo';
 const element = (
   <div id='foo'>
     <a>bar</a>
+    <p>你好</p>
+    <h1>123123</h1>
     <b/>
   </div>
 )

@@ -46,7 +46,7 @@ export function reconcileChildren(wipFiber: DedooFiber, elements: DedooElement[]
       // TODO update the node
       newFiber = {
         type: (olderFiber as DedooFiber)?.type,
-        props: (olderFiber as DedooFiber)?.props,
+        props: (element as DedooFiber)?.props,
         dom: (olderFiber as DedooFiber)?.dom,
         parent: wipFiber,
         alternate: olderFiber,
@@ -62,7 +62,7 @@ export function reconcileChildren(wipFiber: DedooFiber, elements: DedooElement[]
         dom: null,
         parent: wipFiber,
         alternate: null,
-        effectTag: 'ADD'
+        effectTag: 'PLACEMENT'
       }
     }
 

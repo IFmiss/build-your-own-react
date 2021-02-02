@@ -1,15 +1,15 @@
-type DedooNode = () => void;
+type DedooNode = (props: DedooElementProps) => unknown;
 
 type FiberDom = HTMLElement | Text;
 
 type SelfElementType = 'TEXT_ELEMENT';
 type DedooElementType = keyof HTMLElementTagNameMap | DedooNode | SelfElementType;
 
-type FiberEffectTag = 'UPDATE' | 'DELETE' | 'ADD';
+type FiberEffectTag = 'UPDATE' | 'DELETE' | 'PLACEMENT';
 
 interface DedooElementProps {
   [props: string]: any;
-  children: DedooElement[];
+  children?: DedooElement[];
 };
 interface DedooElement {
   type: DedooElementType
