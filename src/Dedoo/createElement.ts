@@ -3,6 +3,7 @@ export default function createElement(
   props: object,
   ...children
 ): DedooElement {
+  console.info('type', type);
   return {
     type,
     props: {

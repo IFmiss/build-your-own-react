@@ -16,6 +16,9 @@ export function createDom(fiber: DedooFiber) {
   
   // 设置属性
   // 过滤children
+  if (fiber.props) {
+    console.info('Object.keys(fiber.props)', Object.keys(fiber.props).filter(isProperty))
+  }
   fiber.props && Object.keys(fiber.props)
     .filter(isProperty)
     .forEach(name => {

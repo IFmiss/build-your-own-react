@@ -5,7 +5,7 @@ import { isEvent, isGone, isNew, isProperty } from "./utils";
 export let wipRoot: FiberNextWork  = null;
 export let currentRoot: FiberNextWork  = null;
 
-export function setWipRoot(val: any) {
+export function setWipRoot(val: FiberNextWork) {
   wipRoot = val;
 }
 
@@ -56,6 +56,7 @@ export function commitWork(fiber: FiberNextWork) {
     fiber.effectTag === 'PLACEMENT' &&
     fiber.dom !== null
   ) {
+    console.info('fiber.dom', fiber.dom);
     domParent?.appendChild(fiber.dom);
   } else if (
     // ! 更新

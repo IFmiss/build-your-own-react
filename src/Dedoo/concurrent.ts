@@ -90,7 +90,7 @@ export function getNextUnitOfWork () {
 // 循环渲染函数
 // 在渲染函数中，将nextUnitOfWork设置为纤维树的根。
 // 然后，当浏览器准备就绪时，它将调用我们的workLoop，我们将开始在根目录上工作
-export function workLoop(deadLine) {
+export function workLoop(deadLine: RequestIdleCallbackDeadline) {
   let shouldYield = false;  // 是否要挂起
 
   // 如果存在任务 且 未暂停
@@ -99,6 +99,8 @@ export function workLoop(deadLine) {
     // 执行任务
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
   }
+
+  shouldYield = deadLine.timeRemaining() < 1;
 
   // 如果没有后续任务，且wipRoot存在，则执行 commit动作；
   if (!nextUnitOfWork && getWipRoot()) {
@@ -146,8 +148,23 @@ export function performUnitOfWork(fiber: DedooFiber): FiberNextWork {
   return null;
 }
 
+// ! hooks 
+// 我们需要在调用函数组件之前初始化一些全局变量
+// 以便可以在useState函数中使用它们
+let wipFiber: DedooFiber | null = null
+export function getWipFiber() { return wipFiber };
+let hookIndex: number | null = null
+export function getHookIndex() { return hookIndex };
+export function setHookIndex(val: number | null) { hookIndex = val };
 
 function updateFunctionComponent(fiber: DedooFiber) {
+  // 首先，我们设置正在进行的工作纤维
+  wipFiber = fiber;
+  // 我们还向光纤添加了一个hooks数组，以支持在同一组件中多次调用useState
+  // 并且我们跟踪当前的钩子索引。
+  hookIndex = 0;
+  wipFiber.hooks = [];
+  
   const children = [(fiber.type as DedooNode)(fiber.props || {})] as DedooElement[];
   reconcileChildren(fiber, children);
 }
@@ -160,6 +177,7 @@ function updateHostComponent(fiber: DedooFiber) {
   // 我们在fiber.dom属性中跟踪DOM节点
   // ! add dom node
   if (!fiber.dom) {
+    console.info('fiber add ', fiber)
     fiber.dom = createDom(fiber);
   }
 

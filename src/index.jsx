@@ -17,14 +17,24 @@ import ReactDOM from 'react-dom';
 import Dedoo from './Dedoo';
 
 /**@jsx Dedoo.createElement */
-const element = (
-  <div id='foo'>
-    <a>bar</a>
-    <p>你好</p>
-    <h1>123123</h1>
-    <b/>
-  </div>
-)
+const Element = () => {
+  const [state, setState] = Dedoo.useState(1);
+  return (
+    <div id='foo'>
+      <a>bar</a>
+      <p>你好</p>
+      <p>{state}</p>
+      <h1>123123</h1>
+      {/* <button onClick={() => {
+        setState(c => c + 1)
+      }}>点击</button> */}
+      <button onClick={alert}>点击</button>
+      <b/>
+    </div>
+  )
+}
+
+const element = <Element name="foo" />
 
 const container = document.getElementById('root');
 Dedoo.render(element, container);

@@ -23,6 +23,7 @@ interface DedooFiber extends DedooElement {
   child?: DedooFiber | null;
   alternate: DedooFiber | null;
   effectTag: FiberEffectTag;
+  hooks?: Array<any>;
 }
 
 type FiberNextWork = DedooFiber | null;
