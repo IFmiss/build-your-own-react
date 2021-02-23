@@ -2,7 +2,7 @@ import { isProperty } from "./utils";
 import {
   setNextUnitOfWork,
 } from './concurrent';
-import { setWipRoot } from "./commit";
+import { setWipRoot, updateDom } from "./commit";
 import { getCurrentRoot, setDeletions } from "./reconciliation";
 
 export function createDom(fiber: DedooFiber) {
@@ -17,14 +17,9 @@ export function createDom(fiber: DedooFiber) {
   // 设置属性
   // 过滤children
   if (fiber.props) {
-    console.info('Object.keys(fiber.props)', Object.keys(fiber.props).filter(isProperty))
+    // console.info('Object.keys(fiber.props)', Object.keys(fiber.props).filter(isProperty))
   }
-  fiber.props && Object.keys(fiber.props)
-    .filter(isProperty)
-    .forEach(name => {
-      dom[name] = fiber.props?.[name];
-    })
-  
+  updateDom(dom, {}, fiber.props || {})
   return dom;
 }
 
@@ -43,7 +38,7 @@ function render(element: DedooElement, container: Element | DocumentFragment | n
     alternate: getCurrentRoot()
   }
   setDeletions([]);
-  setWipRoot(wipRoot);
+  setWipRoot(wipRoot as FiberNextWork);
   setNextUnitOfWork(wipRoot);
 };
 

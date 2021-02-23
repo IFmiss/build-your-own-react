@@ -28,7 +28,9 @@ const Element = () => {
       {/* <button onClick={() => {
         setState(c => c + 1)
       }}>点击</button> */}
-      <button onClick={alert}>点击</button>
+      <button onClick={() => {
+        setState(123123);
+      }}>点击</button>
       <b/>
     </div>
   )
@@ -38,3 +40,9 @@ const element = <Element name="foo" />
 
 const container = document.getElementById('root');
 Dedoo.render(element, container);
+
+import './ttt';
+
+import React, {
+  useState
+} from 'react';

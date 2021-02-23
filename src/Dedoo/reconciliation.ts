@@ -72,18 +72,9 @@ export function reconcileChildren(wipFiber: DedooFiber, elements: DedooElement[]
       deletions?.push(olderFiber);
     }
 
-
-
-    // 每一个 element 创建一个fiber
-    // const newFiber: DedooFiber = {
-    //   type: element.type,
-    //   props: element.props,
-    //   parent: wipFiber,
-    //   dom: null,
-    //   child: null,
-    //   sibling: null,
-    //   alternate: null,
-    // }
+    if (olderFiber) {
+      olderFiber = olderFiber.sibling || null;
+    }
 
     // 对于 newFiber 的处理
     // 如果 index 是第一个，则 newFiber 可以理解为是 fiber 的 子元素
@@ -91,7 +82,7 @@ export function reconcileChildren(wipFiber: DedooFiber, elements: DedooElement[]
     // ! 将其添加到纤维树中，将其设置为孩子还是兄弟姐妹，具体取决于它是否是第一个孩子。
     if (index === 0) {
       wipFiber.child = newFiber;
-    } else {
+    } else if (element) {
       // 此时 prevSibling 已经有值了
       (prevSibling as DedooFiber).sibling = newFiber;
     }
@@ -99,6 +90,7 @@ export function reconcileChildren(wipFiber: DedooFiber, elements: DedooElement[]
     // 基于 newFiber 设置新的  prevSibling，用于设置 fiber 的 sibling
     // linkList 操作
     prevSibling = newFiber;
+    console.info('newFiber', index, newFiber);
     index ++;
   }
 }

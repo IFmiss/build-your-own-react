@@ -154,7 +154,7 @@ export function performUnitOfWork(fiber: DedooFiber): FiberNextWork {
 let wipFiber: DedooFiber | null = null
 export function getWipFiber() { return wipFiber };
 let hookIndex: number | null = null
-export function getHookIndex() { return hookIndex };
+export function getHookIndex() { return hookIndex || 0 };
 export function setHookIndex(val: number | null) { hookIndex = val };
 
 function updateFunctionComponent(fiber: DedooFiber) {
@@ -177,7 +177,7 @@ function updateHostComponent(fiber: DedooFiber) {
   // 我们在fiber.dom属性中跟踪DOM节点
   // ! add dom node
   if (!fiber.dom) {
-    console.info('fiber add ', fiber)
+    // console.info('fiber add ', fiber)
     fiber.dom = createDom(fiber);
   }
 

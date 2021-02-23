@@ -6,6 +6,7 @@ export let wipRoot: FiberNextWork  = null;
 export let currentRoot: FiberNextWork  = null;
 
 export function setWipRoot(val: FiberNextWork) {
+  console.info('val', val)
   wipRoot = val;
 }
 
@@ -28,6 +29,7 @@ export function commitRoot() {
   // 因此，在完成提交之后，我们需要
   // ! 保存对“我们提交给DOM的最后一棵纤维树”的引用。
   // 我们称它为currentRoot
+  console.info('wipRootwipRootwipRoot', wipRoot)
   setCurrentRoot(wipRoot);
 
   wipRoot = null
@@ -56,7 +58,6 @@ export function commitWork(fiber: FiberNextWork) {
     fiber.effectTag === 'PLACEMENT' &&
     fiber.dom !== null
   ) {
-    console.info('fiber.dom', fiber.dom);
     domParent?.appendChild(fiber.dom);
   } else if (
     // ! 更新
@@ -97,7 +98,7 @@ function commitDeletion (fiber: DedooFiber, domParent: FiberDom) {
 // 更新 dom 信息
 // event
 // props
-function updateDom (
+export function updateDom (
   dom: FiberDom,
   prevProps: DedooElementProps,
   nextProps: DedooElementProps
@@ -133,13 +134,14 @@ function updateDom (
     .forEach(name => {
       dom[name] = nextProps[name];
     })
-  
   // TODO add event listeners
   Object.keys(nextProps)
     .filter(isEvent)
     .filter(isNew(prevProps, nextProps))
     .forEach(name => {
-      const eventName = name.toLocaleLowerCase().substring(2);
+      const eventName = name
+        .toLocaleLowerCase()
+        .substring(2);
       dom.addEventListener(
         eventName,
         nextProps[name]
