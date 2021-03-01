@@ -13,7 +13,6 @@
 // import './module/6_reconciliation';
 
 // import './module/7_functionComponents';
-import ReactDOM from 'react-dom';
 import Dedoo from './Dedoo';
 
 /**@jsx Dedoo.createElement */
@@ -25,9 +24,9 @@ const Element = () => {
       <p>你好</p>
       <p>{state}</p>
       <h1>123123</h1>
-      {/* <button onClick={() => {
+      <button onClick={() => {
         setState(c => c + 1)
-      }}>点击</button> */}
+      }}>点击</button>
       <button onClick={() => {
         setState(123123);
       }}>点击</button>
@@ -41,8 +40,3 @@ const element = <Element name="foo" />
 const container = document.getElementById('root');
 Dedoo.render(element, container);
 
-import './ttt';
-
-import React, {
-  useState
-} from 'react';
